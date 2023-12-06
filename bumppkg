@@ -1,0 +1,20 @@
+#!/bin/bash
+# A tool for bumping PKGBUILD's to a higher version
+# Usage: bumppkg <new_ver>
+
+new_ver=$1
+echo "pkgver=$new_ver"
+
+rg --passthru "^pkgver=[\t ]*[0-9]\\.[0-9]\\.[0-9]" -r "pkgver=$new_ver" PKGBUILD > /tmp/PKGBUILD && mv /tmp/PKGBUILD PKGBUILD
+updpkgsums || exit 1
+makepkg --printsrcinfo > .SRCINFO || exit 1
+git add .SRCINFO PKGBUILD || exit 1
+
+
+echo "push to git? [yn]"
+read input
+
+if [ $input = "y" ] ; then
+  git commit -m "bump to v$new_ver"
+  git push
+fi
