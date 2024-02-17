@@ -3,3 +3,4 @@ pkg/
 reltools/
 
 reltools-*.tar.zst
+reltools-*.deb.zip

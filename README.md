@@ -1,2 +1,2 @@
 # reltools
-Collection of tools to make releasing software easier
+Collection of scripts to make releasing software easier. Most are for aur packages

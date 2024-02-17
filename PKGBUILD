@@ -1,5 +1,5 @@
 # Maintainer: ldev <ldev@ldev.eu.org>
-pkgver=0.1.0
+pkgver=1.0.0
 pkgrel=1
 
 pkgname='reltools'
@@ -20,4 +20,5 @@ package(){
   # 755 rwxr-xr-x
   install -Dm 755 "bumppkg" -t "$pkgdir/usr/bin/"
   install -Dm 755 "makepkg_deb" -t "$pkgdir/usr/bin/"
+  install -Dm 755 "newaur" -t "$pkgdir/usr/bin/"
 }

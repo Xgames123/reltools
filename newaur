@@ -1,0 +1,36 @@
+#!/bin/bash
+# A tool to setup an aur pkg
+USAGE="Usage: newaur <pkgname>"
+
+pkgname=$1
+if [ -z $pkgname ] ; then
+  echo "$USAGE"
+  exit 1
+fi
+
+git -c init.defaultbranch=master clone ssh://aur@aur.archlinux.org/$pkgname.git | exit 1
+cd $pkgname
+
+
+cp /usr/share/pacman/PKGBUILD.proto PKGBUILD
+git add --force PKGBUILD
+
+echo "*" > .gitignore
+
+echo "creating hooks"
+echo "#!/bin/bash
+# A hook to regenerate .SRCINFO on pre-commit for aur packages
+
+makepkg --printsrcinfo > .SRCINFO
+git add --force .SRCINFO
+" > .git/hooks/pre-commit
+
+echo "Making the hooks executable..."
+sudo chmod +x .git/hooks/pre-commit
+
+echo "done"
+echo
+echo "These credentials will be used to push commits."
+echo "name: $(git config --get user.name)"
+echo "email: $(git config --get user.email)"
+echo
