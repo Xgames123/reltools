@@ -4,5 +4,4 @@
 6. push --tags
 7. create github release
 
-8. bumppkg
-9. close issues fixed in release
+8. close issues fixed in release
