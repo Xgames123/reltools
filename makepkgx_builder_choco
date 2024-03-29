@@ -1,0 +1,63 @@
+#!/bin/bash
+# makepkgx builder for chocolaty packages
+
+# aliases
+function cargo() {
+  cargo.exe $@
+}
+function choco() {
+  choco.exe $@
+}
+
+
+write_nuspec(){
+echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>
+<package xmlns=\"http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd\">
+  <metadata>
+    <id>$pkgname</id>
+    <version>$pkgver</version>
+    <owners>$maintainer_short</owners>
+
+    <title>$pkgname</title>
+    <authors>$maintainer_short</authors>
+
+    <projectUrl>$url</projectUrl>
+    <iconUrl>$iconurl</iconUrl>
+
+    <projectSourceUrl>$url</projectSourceUrl>
+    <tags>$tags</tags>
+    <summary>$pkgdesc</summary>
+    <description>$pkgdesc</description>
+  </metadata>
+  <files>
+    <file src=\"tools\\**\" target=\"tools\" />
+  </files>
+</package>
+"
+}
+
+create_package(){
+  if ! [[ -f "/proc/sys/fs/binfmt_misc/WSLInterop" ]] ; then
+    error "$(gettext "makepkgx needs to run under wsl for choco packages")"
+		exit $E_PACKAGE_FAILED
+  fi
+
+	pkgarch=$(get_pkg_arch)
+
+  if [[ $maintainer = "" ]] ; then
+    error "$(gettext "At least one maintainer is required to build a choco package")"
+		exit $E_PACKAGE_FAILED
+  fi
+
+  mkdir -p tools
+  write_nuspec > $pkgname.nuspec
+
+	local fullver=$(get_full_version)
+	local pkg_file="$PKGDEST/${pkgname}-${fullver}-${debarch}.deb"
+
+  if ! dpkg --build . $pkg_file ; then
+		error "$(gettext "Failed to create package file.")"
+		exit $E_PACKAGE_FAILED
+  fi
+}
+

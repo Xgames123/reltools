@@ -1,0 +1,81 @@
+#!/bin/bash
+# makepkgx builder for debian packages
+
+uname_arch_to_deb(){
+  if [ "$1" = "x86_64" ]; then
+    echo "amd64"
+    exit
+  elif [ "$1" = "armv7h" ]; then
+    echo "armhf"
+  elif [ "$1" = "any" ] ; then
+    echo "all"
+  else
+    echo $1
+  fi
+}
+
+to_deb_array(){
+  value=$1
+  for val in ${value[@]} ; do
+    printf "$val, "
+  done
+}
+
+
+x_required ()
+{
+  if [ "$2" = "" ] ; then
+		error "$(gettext "%s Is required for deb packages")" "$3"
+		exit $E_PACKAGE_FAILED
+  fi
+  echo "$1: $2"
+}
+x_optional ()
+{
+  if [ "$2" != "" ] ; then
+    echo "$1: $2"
+  fi
+}
+
+
+write_control_file(){
+  x_required "Package" "$pkgname" "pkgname"
+  x_required "Architecture" "$debarch" "arch"
+  x_required "Description" "$pkgdesc" "pkgdesc"
+  x_required "Version" "$pkgver" "pkgver"
+  
+  x_required "Maintainer" "$maintainer" "maintainer"
+
+  x_optional "Section" "$section" "section"
+  x_optional "Homepage" "$url" "url"
+  
+  depdepends=$(to_deb_array "$depends")
+  debconflicts=$(to_deb_array "$conflicts")
+  debprovides=$(to_deb_array "$provides")
+
+  x_optional "Depends" "$debdepends" "depends"
+  x_optional "Conflicts" "$debconflicts" "conflicts"
+  x_optional "Provides" "$debprovides" "provides"
+}
+
+create_package(){
+	pkgarch=$(get_pkg_arch)
+  debarch=$(uname_arch_to_deb "$pkgarch")
+
+  if [[ $maintainer = "" ]] ; then
+    error "$(gettext "At least one maintainer is required to build a deb package")"
+		exit $E_PACKAGE_FAILED
+  fi
+
+  mkdir -p DEBIAN
+  write_control_file > DEBIAN/control
+
+	local fullver=$(get_full_version)
+	local pkg_file="$PKGDEST/${pkgname}-${fullver}-${debarch}.deb"
+
+  if ! dpkg --build . $pkg_file ; then
+		error "$(gettext "Failed to create package file.")"
+		exit $E_PACKAGE_FAILED
+  fi
+}
+

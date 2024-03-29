@@ -1,4 +1,5 @@
 #!/bin/bash
+# NOTE: use makepkgx -f deb
 # A crappy makepkg clone to build PKGBUILD's into .debs for debian
 # Usage makepkg_deb
 os="deb"
@@ -7,7 +8,7 @@ source ./PKGBUILD
 
 
 srcdir=$PWD/src
-pkgdir=$PWD/pkg/$pkgname
+pkgdir=$PWD/pkg_deb/$pkgname
 
 mkdir -p $srcdir
 mkdir -p $pkgdir
