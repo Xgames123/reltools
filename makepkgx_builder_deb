@@ -16,9 +16,9 @@ uname_arch_to_deb(){
 
 to_deb_array(){
   value=$1
-  for val in ${value[@]} ; do
-    printf "$val, "
-  done
+  printf -v debarray "%s, " ${value[@]}
+
+  printf "%s" ${debarray::-2}
 }
 
 
