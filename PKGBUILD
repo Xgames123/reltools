@@ -1,5 +1,4 @@
 # Maintainer: ldev <ldev@ldev.eu.org>
-# Maintainer: jef <jef@ldev.eu.org>
 pkgver=1.0.0
 pkgrel=1
 url="https://github.com/Xgames123/reltools"
