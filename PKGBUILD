@@ -23,4 +23,8 @@ package(){
   install -Dm 755 "bumppkg" -t "$pkgdir/usr/bin/"
   install -Dm 755 "makepkg_deb" -t "$pkgdir/usr/bin/"
   install -Dm 755 "newaur" -t "$pkgdir/usr/bin/"
+
+  install -Dm 755 "makepkgx" -t "$pkgdir/usr/bin/"
+  install -Dm 755 "makepkgx_builder_arch" -t "$pkgdir/usr/bin/"
+  install -Dm 755 "makepkgx_builder_deb" -t "$pkgdir/usr/bin/"
 }
